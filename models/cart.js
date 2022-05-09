@@ -7,6 +7,10 @@ const p = path.join(
   "carts.json"
 );
 
+const writeFile = (filePath, contentToWrite, errFn) => {
+  fs.writeFile(filePath, JSON.stringify(contentToWrite), errFn);
+};
+
 module.exports = class Cart {
   static addProduct(id, productPrice) {
     //   fetch the previous cart
@@ -32,7 +36,46 @@ module.exports = class Cart {
         cart.products = [...cart.products, updatedProduct];
       }
       cart.totalPrice = cart.totalPrice + +productPrice;
-      fs.writeFile(p, JSON.stringify(cart), (err) => {
+      writeFile(p, cart, (err) => {
+        console.log(err);
+      });
+      // fs.writeFile(p, JSON.stringify(cart), (err) => {
+      //   console.log(err);
+      // });
+    });
+  }
+
+  static getCart(cb) {
+    fs.readFile(p, (err, fileContent) => {
+      if (!err) {
+        cb(JSON.parse(fileContent));
+        return;
+      }
+      cb(null);
+    });
+  }
+
+  static deleteProduct(id, productPrice) {
+    fs.readFile(p, (err, filecontent) => {
+      if (err) {
+        return;
+      }
+
+      let updatedCart = { ...JSON.parse(filecontent) };
+      const productToRemove = updatedCart.products.find(
+        (product) => product.id === id
+      );
+
+      if (!productToRemove) return;
+      const productToRemoveQty = productToRemove.qty;
+      // remove from the cart
+      updatedCart.products = updatedCart.products.filter(
+        (product) => product.id !== id
+      );
+      updatedCart.totalPrice =
+        updatedCart.totalPrice - productPrice * productToRemoveQty;
+      console.log(updatedCart);
+      writeFile(p, updatedCart, (err) => {
         console.log(err);
       });
     });
