@@ -3,6 +3,8 @@ const path = require("path");
 
 const Cart = require("./cart");
 
+const db = require("../util/database");
+
 const p = path.join(
   path.dirname(process.mainModule.filename),
   "data",
@@ -33,35 +35,18 @@ module.exports = class Product {
   }
 
   save() {
-    getProductsFromFile((products) => {
-      if (this.id) {
-        const existingProductIndex = products.findIndex(
-          (p) => p.id === this.id
-        );
-        const updatedProducts = [...products];
-        updatedProducts[existingProductIndex] = this;
-        writeFile(p, updatedProducts, (err) => {
-          console.log(err);
-        });
-      } else {
-        this.id = Math.floor(Math.random() + Date.now() / 1000).toString();
-        products.push(this);
-        writeFile(p, products, (err) => {
-          console.log(err);
-        });
-      }
-    });
+    return db.execute(
+      "insert into products (title, price, description, imageUrl) values(?,?,?,?)",
+      [this.title, this.price, this.description, this.imageUrl]
+    );
   }
 
-  static findById(id, cb2) {
-    getProductsFromFile((products) => {
-      const product = products.find((p) => p.id === id);
-      cb2(product);
-    });
+  static findById(id) {
+    return db.execute(`select * from products where products.id= ?`, [id]);
   }
 
-  static fetchAll(cb) {
-    getProductsFromFile(cb);
+  static fetchAll() {
+    return db.execute("Select * from products");
   }
 
   static deleteById(id) {
