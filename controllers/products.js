@@ -21,14 +21,18 @@ exports.getProducts = (req, res, next) => {
   /* Logging the products array to the console. */
   // console.log(adminData.products);
 
-  const products = Product.fetchAll((products) => {
-    res.render("shop", {
-      prods: products,
-      pageTitle: "Shop",
-      hasProducts: products.length > 0,
-      path: "/",
-      activeShop: true,
-      productCSS: true,
+  Product.findAll()
+    .then((products) => {
+      res.render("shop", {
+        prods: products,
+        pageTitle: "Shop",
+        hasProducts: products.length > 0,
+        path: "/",
+        activeShop: true,
+        productCSS: true,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };

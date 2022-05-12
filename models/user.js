@@ -2,27 +2,23 @@ const Sequelize = require("sequelize");
 
 const sequelize = require("../util/database");
 
-// creating model
-const Product = sequelize.define("product", {
+// creating model for user
+const User = sequelize.define("user", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true,
   },
-  title: Sequelize.STRING,
-  price: {
-    type: Sequelize.DOUBLE,
-    allowNull: false,
-  },
-  imageUrl: {
+  name: {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  description: {
-    type: Sequelize.STRING,
+  email: Sequelize.STRING,
+  dob: {
+    type: Sequelize.DATEONLY,
     allowNull: false,
   },
 });
 
-module.exports = Product;
+module.exports = User;
